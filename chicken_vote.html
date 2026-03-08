@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍗 Chicken Sandwich Showdown</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comfortaa', cursive;
+            background: #000;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.05;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='400' height='400' fill='%23000' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        .title {
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 4rem;
+            color: #fff;
+            text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3), 8px 8px 0 rgba(255, 107, 107, 0.2);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #fff;
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .restaurants-grid {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .restaurant-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 
+                0 10px 0 rgba(0, 0, 0, 0.1),
+                0 20px 30px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 4px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            animation: cardFade 0.6s ease-out both;
+        }
+
+        .restaurant-card:nth-child(1) { animation-delay: 0.1s; }
+        .restaurant-card:nth-child(2) { animation-delay: 0.2s; }
+        .restaurant-card:nth-child(3) { animation-delay: 0.3s; }
+        .restaurant-card:nth-child(4) { animation-delay: 0.4s; }
+        .restaurant-card:nth-child(5) { animation-delay: 0.5s; }
+
+        .restaurant-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            transition: all 0.6s ease-out;
+            z-index: 0;
+        }
+
+        .restaurant-card:hover::before {
+            top: 0;
+            left: 0;
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-8px) rotate(1deg);
+            box-shadow: 
+                0 15px 0 rgba(0, 0, 0, 0.15),
+                0 30px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .restaurant-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .restaurant-info {
+            flex: 1;
+        }
+
+        .restaurant-name {
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 1.8rem;
+            color: #FF6B6B;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFE66D 0%, #FFA500 100%);
+            color: #333;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+        }
+
+        .votes-display {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .votes-count {
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 1.8rem;
+            color: #FF6B6B;
+            font-weight: 700;
+        }
+
+        .vote-button {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 6px 0 rgba(255, 107, 107, 0.4);
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            letter-spacing: 1px;
+        }
+
+        .vote-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: left 0.4s ease;
+        }
+
+        .vote-button:hover::before {
+            left: 100%;
+        }
+
+        .vote-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 0 rgba(255, 107, 107, 0.4);
+        }
+
+        .vote-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 0 rgba(255, 107, 107, 0.4);
+        }
+
+        .vote-animation {
+            animation: votePulse 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cardFade {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes votePulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            font-size: 2rem;
+            animation: confettiFall 2s ease-out forwards;
+            z-index: 3;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(300px) rotate(360deg);
+            }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #fff;
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+            font-weight: 700;
+            animation: slideDown 1s ease-out 0.8s backwards;
+            animation-fill-mode: both;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B6B 0%, #FFE66D 100%);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        @media (max-width: 600px) {
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .restaurant-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .vote-button {
+                width: 100%;
+                text-align: center;
+            }
+
+            .restaurant-card:hover {
+                transform: translateY(-4px) rotate(0deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    
+    <div class="container">
+        <header>
+            <div class="title">🐔 SHOWDOWN</div>
+            <div class="subtitle">Bozeman Chicken Sandwich War</div>
+        </header>
+
+        <div class="restaurants-grid" id="restaurantsList"></div>
+
+        <div class="footer">
+            Total Votes: <span id="totalVotes">0</span> 🎉
+        </div>
+    </div>
+
+    <script>
+        // Initialize with sample data (stored in memory)
+        let restaurants = [
+            { name: 'Revelry', votes: 0 },
+            { name: 'Cross The Road Chicken Co.', votes: 0 },
+            { name: 'MAP Brewing Company', votes: 0 },
+            { name: 'Ale Works', votes: 0 },
+            { name: 'Roost Fried Chicken', votes: 0 }
+        ];
+
+        let hasVoted = false;
+
+        // Try to load from localStorage, fall back to in-memory
+        try {
+            const saved = localStorage.getItem('chickenVotes');
+            if (saved) {
+                restaurants = JSON.parse(saved);
+            }
+        } catch (e) {
+            console.log('Using in-memory storage');
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('chickenVotes', JSON.stringify(restaurants));
+            } catch (e) {
+                console.log('Data saved to memory only');
+            }
+        }
+
+        function getSortedRestaurants() {
+            return [...restaurants].sort((a, b) => b.votes - a.votes);
+        }
+
+        function render() {
+            const sorted = getSortedRestaurants();
+            const container = document.getElementById('restaurantsList');
+            const totalVotes = restaurants.reduce((sum, r) => sum + r.votes, 0);
+            
+            container.innerHTML = sorted.map((restaurant, index) => {
+                const maxVotes = Math.max(...restaurants.map(r => r.votes), 1);
+                const percentage = (restaurant.votes / maxVotes) * 100;
+                
+                return `
+                    <div class="restaurant-card" data-name="${restaurant.name}">
+                        <div class="restaurant-content">
+                            <div class="restaurant-info">
+                                <div class="rank-badge">#${index + 1}</div>
+                                <div class="restaurant-name">${restaurant.name}</div>
+                                <div class="votes-display">
+                                    <span class="votes-count">${restaurant.votes}</span> vote${restaurant.votes !== 1 ? 's' : ''}
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${percentage}%"></div>
+                                </div>
+                            </div>
+                            <button class="vote-button" onclick="addVote('${restaurant.name}')" ${hasVoted ? 'disabled' : ''}>
+                                ${hasVoted ? 'VOTED' : 'VOTE'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('totalVotes').textContent = totalVotes;
+            
+            // Style disabled buttons
+            if (hasVoted) {
+                document.querySelectorAll('.vote-button').forEach(btn => {
+                    btn.style.opacity = '0.6';
+                    btn.style.cursor = 'not-allowed';
+                });
+            }
+        }
+
+        function addVote(restaurantName) {
+            if (hasVoted) {
+                alert('You\'ve already voted! Thanks for participating in the Bozeman Chicken Sandwich War!');
+                return;
+            }
+
+            const restaurant = restaurants.find(r => r.name === restaurantName);
+            if (restaurant) {
+                restaurant.votes++;
+                hasVoted = true;
+                saveData();
+                render();
+                
+                // Trigger animation on the card
+                const card = document.querySelector(`[data-name="${restaurantName}"]`);
+                if (card) {
+                    card.classList.add('vote-animation');
+                    setTimeout(() => card.classList.remove('vote-animation'), 600);
+                }
+                
+                // Create confetti
+                createConfetti();
+            }
+        }
+
+        function createConfetti() {
+            const emojis = ['🍗', '🎉', '⭐', '🔥', '😋'];
+            for (let i = 0; i < 5; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-20px';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 2000);
+            }
+        }
+
+        // Initial render
+        render();
+    </script>
+</body>
+</html>
